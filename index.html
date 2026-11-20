@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>مين أنت في التخصص؟ | GDGoC DevFest</title>
+  <meta name="description" content="لعبة أسئلة سريعة لفعالية DevFest من GDGoC: اكتب تخصصك وجاوب على 5 أسئلة.">
+  <meta name="theme-color" content="#4285F4">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='20' cy='20' r='12' fill='%234285F4'/%3E%3Ccircle cx='44' cy='20' r='12' fill='%23EA4335'/%3E%3Ccircle cx='20' cy='44' r='12' fill='%2334A853'/%3E%3Ccircle cx='44' cy='44' r='12' fill='%23FBBC04'/%3E%3C/svg%3E">
+
+  <!-- الخطوط: Google Sans للحروف اللاتينية فقط (عبر text=) و IBM Plex Sans Arabic للحروف العربية -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap&text=%20%21%22%23%24%25%26%27%28%29%2A%2B%2C-.%2F0123456789%3A%3B%3C%3D%3E%3F%40ABCDEFGHIJKLMNOPQRSTUVWXYZ%5B%5C%5D%5E_%60abcdefghijklmnopqrstuvwxyz%7B%7C%7D~%C2%A0%C2%A1%C2%A2%C2%A3%C2%A4%C2%A5%C2%A6%C2%A7%C2%A8%C2%A9%C2%AA%C2%AB%C2%AC%C2%AD%C2%AE%C2%AF%C2%B0%C2%B1%C2%B2%C2%B3%C2%B4%C2%B5%C2%B6%C2%B7%C2%B8%C2%B9%C2%BA%C2%BB%C2%BC%C2%BD%C2%BE%C2%BF%C3%80%C3%81%C3%82%C3%83%C3%84%C3%85%C3%86%C3%87%C3%88%C3%89%C3%8A%C3%8B%C3%8C%C3%8D%C3%8E%C3%8F%C3%90%C3%91%C3%92%C3%93%C3%94%C3%95%C3%96%C3%97%C3%98%C3%99%C3%9A%C3%9B%C3%9C%C3%9D%C3%9E%C3%9F%C3%A0%C3%A1%C3%A2%C3%A3%C3%A4%C3%A5%C3%A6%C3%A7%C3%A8%C3%A9%C3%AA%C3%AB%C3%AC%C3%AD%C3%AE%C3%AF%C3%B0%C3%B1%C3%B2%C3%B3%C3%B4%C3%B5%C3%B6%C3%B7%C3%B8%C3%B9%C3%BA%C3%BB%C3%BC%C3%BD%C3%BE%C3%BF%CF%80%CE%A9%CE%94%CE%BC%CE%BB%E2%88%9A%E2%88%AB%E2%89%88%E2%89%A4%E2%89%A5%C2%B1%C3%97%C3%B7%E2%88%92%E2%86%92%E2%86%90%E2%86%91%E2%86%93%E2%9C%93%E2%9C%97%E2%80%A2%E2%80%A6%E2%80%93%E2%80%94%E2%80%98%E2%80%99%E2%80%9C%E2%80%9D%E2%80%B2%E2%80%B3%E2%81%B0%C2%B9%C2%B2%C2%B3%E2%81%B4%E2%81%B5%E2%81%B6%E2%81%B7%E2%81%B8%E2%81%B9%E2%81%BB%E2%82%80%E2%82%81%E2%82%82%E2%82%83%E2%82%84%E2%82%85%E2%82%86%E2%82%87%E2%82%88%E2%82%89">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- شريط التقدم بألوان جوجل -->
+  <div class="top-progress is-brand" id="topProgress" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span class="brand-text" dir="ltr"><b>GDGoC</b> <span id="eventName">DevFest</span></span>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn lang-btn" id="langBtn" type="button"><span id="langBtnText">EN</span></button>
+      <button class="icon-btn mute-btn" id="muteBtn" type="button" aria-pressed="false">
+        <svg class="ic-sound" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4a1 1 0 0 0 1 1h3l4 4V5L7 9H4a1 1 0 0 0-1 1z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg class="ic-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4a1 1 0 0 0 1 1h3l4 4V5L7 9H4a1 1 0 0 0-1 1z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <!-- 1) شاشة البداية -->
+    <section class="screen" id="screenStart" aria-labelledby="heroTitle">
+      <div class="card hero-card">
+        <div class="shapes" aria-hidden="true"><i class="sh sh-b"></i><i class="sh sh-r"></i><i class="sh sh-y"></i><i class="sh sh-g"></i></div>
+        <span class="kicker" data-i18n="kicker"></span>
+        <h1 id="heroTitle" class="hero-title" data-i18n="heroTitle"></h1>
+        <p class="hero-sub" id="heroSub"></p>
+
+        <form id="majorForm" class="major-form" autocomplete="off" novalidate>
+          <label for="majorInput" class="form-label" data-i18n="askMajor"></label>
+          <div class="input-row">
+            <input id="majorInput" class="major-input" type="text" maxlength="60" enterkeyhint="go" dir="auto" spellcheck="false" autocapitalize="off">
+            <button class="btn btn-primary btn-start" type="submit">
+              <span data-i18n="start"></span>
+              <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+          <p class="form-error" id="formError" role="alert"></p>
+        </form>
+
+        <p class="meta" id="startMeta"></p>
+
+        <details class="all-majors">
+          <summary data-i18n="browse"></summary>
+          <div class="majors-grid" id="majorsGridStart"></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- 2) شاشة الاقتراحات -->
+    <section class="screen" id="screenSuggest" hidden aria-labelledby="suggestTitle">
+      <div class="card suggest-card">
+        <div class="big-emoji" aria-hidden="true">🤔</div>
+        <h2 id="suggestTitle" class="suggest-title" dir="auto"></h2>
+        <p class="suggest-sub" data-i18n="suggestSub"></p>
+        <div class="suggest-list" id="suggestList"></div>
+        <div class="row-actions">
+          <button class="btn btn-tonal" id="btnGeneral" type="button"></button>
+          <button class="btn btn-text" id="btnBackSuggest" type="button" data-i18n="back"></button>
+        </div>
+        <details class="all-majors">
+          <summary data-i18n="showAll"></summary>
+          <div class="majors-grid" id="majorsGridSuggest"></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- 3) شاشة الأسئلة -->
+    <section class="screen" id="screenQuiz" hidden>
+      <div class="quiz-head">
+        <div class="quiz-info">
+          <span class="major-chip" id="quizMajor"></span>
+          <span class="counter" id="qCounter"></span>
+        </div>
+        <div class="quiz-side">
+          <span class="score-pill" id="scorePill"></span>
+          <div class="timer" id="timer" role="timer" data-level="ok">
+            <svg viewBox="0 0 60 60" aria-hidden="true">
+              <circle class="timer-track" cx="30" cy="30" r="26"></circle>
+              <circle class="timer-ring" id="timerRing" cx="30" cy="30" r="26"></circle>
+            </svg>
+            <span class="timer-num" id="timerNum">20</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="notice" id="quizNotice" hidden></p>
+
+      <div class="card q-card" id="qCard">
+        <h2 class="q-text" id="qText" dir="auto"></h2>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback" hidden>
+          <div class="fb-title" id="fbTitle"></div>
+          <p class="fb-answer" id="fbAnswer" dir="auto"></p>
+          <p class="fb-explain" id="fbExplain" dir="auto"></p>
+          <div class="fb-actions">
+            <button class="btn btn-primary btn-next" id="btnNext" type="button">
+              <span class="btn-label"></span>
+              <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz-foot">
+        <button class="btn btn-text btn-small" id="btnQuit" type="button"></button>
+        <p class="keys-hint" data-i18n="keysHint"></p>
+      </div>
+    </section>
+
+    <!-- 4) شاشة النتيجة -->
+    <section class="screen" id="screenResult" hidden aria-labelledby="tierTitle">
+      <div class="card result-card">
+        <p class="result-major" id="resultMajor"></p>
+        <div class="score-wrap">
+          <svg class="score-ring" id="scoreRing" viewBox="0 0 120 120" aria-hidden="true"></svg>
+          <div class="score-center">
+            <span class="score-num" id="scoreNum">0</span>
+            <span class="score-of" id="scoreOf"></span>
+          </div>
+        </div>
+        <div class="tier-emoji" id="tierEmoji" aria-hidden="true"></div>
+        <h2 class="tier-title" id="tierTitle"></h2>
+        <p class="tier-msg" id="tierMsg"></p>
+        <div class="row-actions">
+          <button class="btn btn-primary" id="btnPlayAgain" type="button">
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="btn-label"></span>
+          </button>
+          <button class="btn btn-outline" id="btnChangeMajor" type="button">
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h13l-3-3M20 17H7l3 3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="btn-label"></span>
+          </button>
+        </div>
+        <details class="review">
+          <summary data-i18n="review"></summary>
+          <ol class="review-list" id="reviewList"></ol>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="footer"></footer>
+
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <div class="sr-only" id="srLive" aria-live="polite"></div>
+
+  <script src="questions.js"></script>
+  <script src="sounds.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

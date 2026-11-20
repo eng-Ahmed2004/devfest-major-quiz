@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Don't Read, Look! · Host</title>
+  <meta name="description" content="لا تقرأ… شوف! — شاشة المضيف لاختبار ستروب الجماعي">
+  <meta name="theme-color" content="#F8F9FA">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Google Sans for Latin text only (text= subset) so Arabic falls back to IBM Plex Sans Arabic -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap&text=%20!%22%23%24%25%26'()*%2B%2C-.%2F0123456789%3A%3B%3C%3D%3E%3F%40ABCDEFGHIJKLMNOPQRSTUVWXYZ%5B%5C%5D%5E_%60abcdefghijklmnopqrstuvwxyz%7B%7C%7D~%C2%B7%C3%97%E2%80%A6%E2%80%93%E2%80%94%E2%80%9C%E2%80%9D%E2%80%98%E2%80%99%E2%86%92%E2%86%90">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <script type="module" src="js/host.js"></script>
+</head>
+<body class="host">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <div class="brand-text">
+        <strong class="brand-title" dir="ltr">Don't Read, Look!</strong>
+        <span class="brand-slogan" data-i18n="slogan">لا تقرأ… شوف!</span>
+      </div>
+    </div>
+    <div class="topbar-mid" id="topCode" hidden>
+      <span data-i18n="roomCode">كود الغرفة</span>
+      <b dir="ltr" id="topCodeValue"></b>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="btnFullscreen" type="button" data-i18n-label="fullscreen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+      <button class="icon-btn" id="btnMute" type="button">
+        <svg class="icon-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23z"/></svg>
+        <svg class="icon-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.8 8.8 0 0 0 21 12a9 9 0 0 0-7-8.77v2.06A7 7 0 0 1 19 12zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a9 9 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4 9.91 6.09 12 8.18V4z"/></svg>
+      </button>
+      <button class="pill-btn tonal" id="btnLang" type="button" data-i18n="langBtn">English</button>
+    </div>
+  </header>
+
+  <main class="stage-wrap">
+    <!-- Boot / errors -->
+    <section class="screen is-active" id="s-boot">
+      <div class="center-card">
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="boot-msg" id="bootMsg" data-i18n="creatingRoom">جارٍ إنشاء الغرفة…</p>
+        <button class="pill-btn primary" id="btnRetry" type="button" data-i18n="newRoom" hidden>غرفة جديدة</button>
+      </div>
+    </section>
+
+    <!-- Lobby -->
+    <section class="screen" id="s-lobby" hidden>
+      <div class="lobby">
+        <div class="card join-card">
+          <p class="eyebrow" data-i18n="joinOnPhone">ادخل من هاتفك</p>
+          <div class="qr" id="qr" aria-hidden="true"></div>
+          <p class="join-url"><span data-i18n="scanOrOpen">امسح الرمز أو افتح</span> <b dir="ltr" id="joinUrl"></b></p>
+          <p class="eyebrow" data-i18n="roomCode">كود الغرفة</p>
+          <div class="room-code" dir="ltr" id="roomCode">----</div>
+        </div>
+        <div class="card players-card">
+          <div class="players-head">
+            <h2 data-i18n="players">اللاعبون</h2>
+            <span class="count-badge" dir="ltr" id="playerCount">0 / 60</span>
+          </div>
+          <p class="rule-hint" data-i18n="rule">اختر لون الخط… لا معنى الكلمة</p>
+          <ul class="player-chips" id="playerList" aria-live="polite"></ul>
+          <p class="empty-hint" id="emptyHint" data-i18n="waitingPlayers">بانتظار انضمام اللاعبين…</p>
+          <div class="lobby-actions">
+            <button class="pill-btn primary xl" id="btnStart" type="button" disabled data-i18n="start">ابدأ اللعبة</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Get ready -->
+    <section class="screen" id="s-ready" hidden>
+      <div class="ready">
+        <p class="ready-q" id="readyQ"></p>
+        <h1 class="ready-title" data-i18n="getReady">استعدوا!</h1>
+        <div class="ready-count" id="readyCount" dir="ltr"></div>
+        <p class="rule-hint big" data-i18n="rule">اختر لون الخط… لا معنى الكلمة</p>
+      </div>
+    </section>
+
+    <!-- Question -->
+    <section class="screen" id="s-question" hidden>
+      <div class="q-head">
+        <span class="q-num" id="qNum"></span>
+        <span class="q-answered" id="qAnswered" aria-live="polite"></span>
+      </div>
+      <div class="word-stage" id="wordStage">
+        <div class="word" id="qWord"></div>
+      </div>
+      <div class="timer" aria-hidden="true">
+        <div class="timer-fill" id="timerFill"></div>
+      </div>
+      <div class="q-foot">
+        <div class="opt-row" id="qOptions"></div>
+        <button class="pill-btn text" id="btnEndNow" type="button" data-i18n="endNow">إنهاء الآن</button>
+      </div>
+    </section>
+
+    <!-- Reveal -->
+    <section class="screen" id="s-reveal" hidden>
+      <div class="reveal">
+        <div class="card reveal-main">
+          <p class="q-num" id="rNum"></p>
+          <p class="eyebrow" data-i18n="correctColor">اللون الصحيح</p>
+          <div class="reveal-answer" id="rAnswer"></div>
+          <p class="reveal-note" id="rNote"></p>
+          <div class="opt-row with-counts" id="rOptions"></div>
+        </div>
+        <div class="reveal-side">
+          <div class="card">
+            <h3 data-i18n="fastest">الأسرع إجابةً صحيحة</h3>
+            <ol class="fastest" id="rFastest"></ol>
+          </div>
+          <div class="card">
+            <h3 data-i18n="leaderboard">الترتيب</h3>
+            <ol class="board" id="rBoard"></ol>
+          </div>
+        </div>
+      </div>
+      <div class="reveal-actions">
+        <span class="auto-next" id="autoNext"></span>
+        <button class="pill-btn primary xl" id="btnNext" type="button" data-i18n="next">التالي</button>
+      </div>
+    </section>
+
+    <!-- Final podium -->
+    <section class="screen" id="s-final" hidden>
+      <h1 class="final-title" data-i18n="finalResults">المنصة النهائية</h1>
+      <div class="podium" id="podium"></div>
+      <ol class="board rest" id="restBoard"></ol>
+      <div class="final-actions">
+        <button class="pill-btn primary xl" id="btnNewGame" type="button" data-i18n="newGame">لعبة جديدة</button>
+        <button class="pill-btn tonal" id="btnNewRoom" type="button" data-i18n="newRoom">غرفة جديدة</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="gbar" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+</body>
+</html>

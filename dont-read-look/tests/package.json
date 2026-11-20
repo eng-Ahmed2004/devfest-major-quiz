@@ -1,0 +1,16 @@
+{
+  "name": "dont-read-look-tests",
+  "private": true,
+  "type": "module",
+  "description": "Local test helpers: logic tests, security-rule tests and bot players (not deployed).",
+  "scripts": {
+    "logic": "node logic.test.mjs",
+    "rules": "node rules.test.mjs",
+    "bots": "node bots.mjs"
+  },
+  "dependencies": {
+    "@firebase/app": "0.16.5",
+    "@firebase/auth": "1.13.9",
+    "@firebase/database": "1.1.5"
+  }
+}

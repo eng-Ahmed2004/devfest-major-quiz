@@ -1,0 +1,6 @@
+# Firebase CLI cache and logs
+.firebase/
+firebase-debug.log
+database-debug.log
+# test dependencies
+tests/node_modules/

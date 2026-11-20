@@ -1,0 +1,117 @@
+{
+  // Don't Read, Look! — Realtime Database security rules.
+  // Everyone signs in anonymously (Firebase Auth). The host is whoever created the room
+  // (rooms/$code/meta/hostUid). Players can only create their own record, claim one slot and
+  // one name, set their own presence, and write their own answer once per question.
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    // Room code -> creation time. Used to avoid code collisions and to find rooms older than 24 h.
+    "roomIndex": {
+      ".read": "auth != null",
+      ".indexOn": [".value"],
+      "$code": {
+        ".write": "auth != null && $code.matches(/^[0-9]{4}$/) && ((!newData.exists() && data.exists() && data.val() < now - 86400000) || (!newData.exists() && root.child('rooms/' + $code + '/meta/hostUid').val() == auth.uid) || (newData.exists() && newData.val() == now && newData.parent().parent().child('rooms/' + $code + '/meta/hostUid').val() == auth.uid && (!data.exists() || root.child('rooms/' + $code + '/meta/hostUid').val() == auth.uid)))"
+      }
+    },
+
+    "rooms": {
+      "$code": {
+        // The host can read and write everything in its own room.
+        // Anyone signed in may create a new room (as its host) or delete a room older than 24 h.
+        ".read": "auth != null && data.child('meta/hostUid').val() == auth.uid",
+        ".write": "auth != null && $code.matches(/^[0-9]{4}$/) && ((!data.exists() && newData.child('meta/hostUid').val() == auth.uid) || data.child('meta/hostUid').val() == auth.uid || (!newData.exists() && data.child('meta/createdAt').val() < now - 86400000))",
+
+        "meta": {
+          ".read": "auth != null",
+          ".validate": "newData.hasChildren(['hostUid', 'createdAt', 'state', 'current', 'total', 'duration'])",
+          "hostUid": { ".validate": "newData.isString() && newData.val() == auth.uid" },
+          "createdAt": { ".validate": "newData.isNumber() && newData.val() <= now" },
+          "state": { ".validate": "newData.isString() && newData.val().matches(/^(lobby|ready|question|closed|reveal|final)$/)" },
+          "current": { ".validate": "newData.isNumber() && newData.val() >= -1 && newData.val() < 100" },
+          "total": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 100" },
+          "duration": { ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 120000" },
+          "$other": { ".validate": false }
+        },
+
+        // All questions are host-only; players only ever see the current one through `live`.
+        "questions": {
+          "$q": { ".validate": "newData.hasChildren(['w', 'i', 'o'])" }
+        },
+
+        "live": {
+          ".read": "auth != null",
+          ".validate": "newData.hasChildren(['key', 'w', 'i', 'o', 'startAt'])",
+          "key": { ".validate": "newData.isString()" },
+          "startAt": { ".validate": "newData.isNumber() && newData.val() <= now" }
+        },
+
+        "players": {
+          "$uid": {
+            ".read": "auth != null && auth.uid == $uid",
+            ".write": "auth != null && auth.uid == $uid && !data.exists() && newData.exists() && root.child('rooms/' + $code + '/meta').exists() && !root.child('rooms/' + $code + '/kicked/' + $uid).exists() && newData.parent().parent().child('slots/' + newData.child('slot').val()).val() == auth.uid && newData.parent().parent().child('names/' + newData.child('key').val()).val() == auth.uid",
+            ".validate": "newData.hasChildren(['name', 'slot', 'key', 'joinedAt'])",
+            "name": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 20" },
+            "slot": { ".validate": "newData.isString() && newData.val().matches(/^([0-9]|[1-5][0-9])$/)" },
+            "key": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40" },
+            "joinedAt": { ".validate": "newData.isNumber() && newData.val() <= now" },
+            "$other": { ".validate": false }
+          }
+        },
+
+        // 60 numbered seats (0..59): this is what enforces the 60-player limit.
+        "slots": {
+          ".read": "auth != null",
+          "$n": {
+            ".write": "auth != null && $n.matches(/^([0-9]|[1-5][0-9])$/) && !data.exists() && newData.val() == auth.uid && !root.child('rooms/' + $code + '/players/' + auth.uid).exists() && newData.parent().parent().child('players/' + auth.uid + '/slot').val() == $n",
+            ".validate": "newData.isString()"
+          }
+        },
+
+        // Normalised name -> uid: guarantees unique names inside a room.
+        "names": {
+          ".read": "auth != null",
+          "$key": {
+            ".write": "auth != null && !data.exists() && newData.val() == auth.uid && !root.child('rooms/' + $code + '/players/' + auth.uid).exists() && newData.parent().parent().child('players/' + auth.uid + '/key').val() == $key",
+            ".validate": "newData.isString()"
+          }
+        },
+
+        "presence": {
+          "$uid": {
+            ".read": "auth != null && auth.uid == $uid",
+            ".write": "auth != null && auth.uid == $uid && (!newData.exists() || root.child('rooms/' + $code + '/players/' + $uid).exists())",
+            ".validate": "newData.isBoolean()"
+          }
+        },
+
+        "kicked": {
+          "$uid": {
+            ".read": "auth != null && auth.uid == $uid",
+            ".validate": "newData.isBoolean()"
+          }
+        },
+
+        // One answer per player per question, only while that question is open, never editable.
+        "answers": {
+          "$q": {
+            "$uid": {
+              ".read": "auth != null && auth.uid == $uid",
+              ".write": "auth != null && auth.uid == $uid && !data.exists() && newData.exists() && root.child('rooms/' + $code + '/players/' + $uid).exists() && root.child('rooms/' + $code + '/meta/state').val() == 'question' && root.child('rooms/' + $code + '/live/key').val() == $q && now <= root.child('rooms/' + $code + '/live/startAt').val() + root.child('rooms/' + $code + '/meta/duration').val() + 2000",
+              ".validate": "newData.hasChildren(['c', 't'])",
+              "c": { ".validate": "newData.isString() && (newData.val() == root.child('rooms/' + $code + '/live/o/0').val() || newData.val() == root.child('rooms/' + $code + '/live/o/1').val() || newData.val() == root.child('rooms/' + $code + '/live/o/2').val() || newData.val() == root.child('rooms/' + $code + '/live/o/3').val())" },
+              "t": { ".validate": "newData.val() == now" },
+              "$other": { ".validate": false }
+            }
+          }
+        },
+
+        // Written only by the host after each question; each player can read only their own.
+        "scores": {
+          "$uid": { ".read": "auth != null && auth.uid == $uid" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Don't Read, Look! · لا تقرأ… شوف!</title>
+  <meta name="description" content="لا تقرأ… شوف! — اختبار ستروب الجماعي لفعالية GDGoC DevFest">
+  <meta name="theme-color" content="#F8F9FA">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Google Sans for Latin text only (text= subset) so Arabic falls back to IBM Plex Sans Arabic -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap&text=%20!%22%23%24%25%26'()*%2B%2C-.%2F0123456789%3A%3B%3C%3D%3E%3F%40ABCDEFGHIJKLMNOPQRSTUVWXYZ%5B%5C%5D%5E_%60abcdefghijklmnopqrstuvwxyz%7B%7C%7D~%C2%B7%C3%97%E2%80%A6%E2%80%93%E2%80%94%E2%80%9C%E2%80%9D%E2%80%98%E2%80%99%E2%86%92%E2%86%90">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="js/player.js"></script>
+</head>
+<body class="player">
+  <header class="topbar compact">
+    <div class="brand">
+      <span class="brand-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <div class="brand-text">
+        <strong class="brand-title" dir="ltr">Don't Read, Look!</strong>
+        <span class="brand-slogan" data-i18n="slogan">لا تقرأ… شوف!</span>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span class="code-badge" id="codeBadge" dir="ltr" hidden></span>
+      <button class="icon-btn" id="btnNames" type="button" data-i18n-label="showNames" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.93 13.5h4.14L12 7.98 9.93 13.5zM20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-4.05 16.5-1.14-3H9.17l-1.12 3H5.96l5.11-13h1.86l5.11 13h-2.09z"/></svg>
+      </button>
+      <button class="icon-btn" id="btnMute" type="button">
+        <svg class="icon-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23z"/></svg>
+        <svg class="icon-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.8 8.8 0 0 0 21 12a9 9 0 0 0-7-8.77v2.06A7 7 0 0 1 19 12zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a9 9 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4 9.91 6.09 12 8.18V4z"/></svg>
+      </button>
+      <button class="pill-btn tonal small" id="btnLang" type="button"><span class="lang-long" data-i18n="langBtn">English</span><span class="lang-short" data-i18n="langShort">EN</span></button>
+    </div>
+  </header>
+
+  <main class="stage-wrap">
+    <section class="screen is-active" id="s-boot">
+      <div class="center-card">
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="boot-msg" id="bootMsg" data-i18n="connecting">جارٍ الاتصال…</p>
+      </div>
+    </section>
+
+    <!-- Join -->
+    <section class="screen" id="s-join" hidden>
+      <form class="card join-form" id="joinForm" novalidate>
+        <div class="demo" aria-hidden="true">
+          <span class="demo-word" id="demoWord"></span>
+        </div>
+        <h1 data-i18n="joinTitle">انضم إلى اللعبة</h1>
+        <p class="muted" data-i18n="rule">اختر لون الخط… لا معنى الكلمة</p>
+        <label class="field">
+          <span data-i18n="codeLabel">كود الغرفة</span>
+          <input id="inCode" name="code" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" dir="ltr" placeholder="0000" required>
+        </label>
+        <label class="field">
+          <span data-i18n="nameLabel">اسمك</span>
+          <input id="inName" name="name" maxlength="16" autocomplete="nickname" enterkeyhint="go" data-i18n-ph="namePh" placeholder="اكتب اسمك" required>
+        </label>
+        <p class="form-error" id="joinError" role="alert"></p>
+        <button class="pill-btn primary xl block" id="btnJoin" type="submit" data-i18n="join">دخول</button>
+      </form>
+    </section>
+
+    <!-- Waiting room -->
+    <section class="screen" id="s-wait" hidden>
+      <div class="card center-card tall">
+        <div class="check-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+        </div>
+        <h1 id="waitTitle" data-i18n="youAreIn">أنت في اللعبة!</h1>
+        <p class="name-badge" id="myName"></p>
+        <p class="muted wait-room" id="waitRoom"></p>
+        <p class="muted" id="waitMsg" data-i18n="waitHost">انتظر حتى يبدأ المضيف</p>
+        <div class="howto">
+          <p data-i18n="howTo">ستظهر كلمة لون مكتوبة بلون آخر. اضغط لون الخط بأسرع ما يمكن!</p>
+        </div>
+        <div class="dots-loader" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <button class="pill-btn text" id="btnChangeRoom" type="button" data-i18n="changeRoom">تغيير الغرفة</button>
+      </div>
+    </section>
+
+    <!-- Get ready -->
+    <section class="screen" id="s-ready" hidden>
+      <div class="center-card tall">
+        <p class="ready-q" id="pReadyQ"></p>
+        <h1 class="ready-title" data-i18n="getReady">استعدوا!</h1>
+        <p class="rule-hint" data-i18n="rule">اختر لون الخط… لا معنى الكلمة</p>
+      </div>
+    </section>
+
+    <!-- Question -->
+    <section class="screen" id="s-question" hidden>
+      <div class="p-question">
+        <div class="timer thin" aria-hidden="true"><div class="timer-fill" id="pTimer"></div></div>
+        <div class="word-stage small" id="pStage">
+          <div class="word" id="pWord"></div>
+        </div>
+        <div class="grid-2x2" id="pOptions"></div>
+      </div>
+    </section>
+
+    <!-- Answer locked -->
+    <section class="screen" id="s-done" hidden>
+      <div class="center-card tall">
+        <div class="done-chip" id="doneChip"></div>
+        <h1 data-i18n="done">تم!</h1>
+        <p class="muted big" data-i18n="waitOthers">بانتظار الباقين…</p>
+      </div>
+    </section>
+
+    <!-- Time up -->
+    <section class="screen" id="s-timeup" hidden>
+      <div class="center-card tall">
+        <div class="result-icon none" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A8.96 8.96 0 0 0 12 4a9 9 0 1 0 9 9c0-2.12-.74-4.07-1.97-5.61zM12 20a7 7 0 1 1 0-14 7 7 0 0 1 0 14z"/></svg>
+        </div>
+        <h1 data-i18n="timeUp">انتهى الوقت!</h1>
+        <p class="muted big" data-i18n="waitOthers">بانتظار الباقين…</p>
+      </div>
+    </section>
+
+    <!-- Result after each question -->
+    <section class="screen" id="s-result" hidden>
+      <div class="card center-card tall result-card" id="resultCard">
+        <div class="result-icon" id="resIcon" aria-hidden="true"></div>
+        <h1 id="resTitle"></h1>
+        <p class="res-points" id="resPoints" dir="ltr"></p>
+        <p class="muted" id="resTime"></p>
+        <div class="res-correct" id="resCorrect"></div>
+        <div class="stat-row">
+          <div class="stat"><span data-i18n="total">مجموعك</span><b id="resTotal" dir="ltr"></b></div>
+          <div class="stat"><span data-i18n="yourRank">ترتيبك</span><b id="resRank"></b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Waiting for next question (joined late) -->
+    <section class="screen" id="s-late" hidden>
+      <div class="card center-card tall">
+        <h1 data-i18n="youAreIn">أنت في اللعبة!</h1>
+        <p class="muted big" data-i18n="lateJoin">اللعبة جارية، ستشارك من السؤال القادم</p>
+        <div class="dots-loader" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      </div>
+    </section>
+
+    <!-- Final -->
+    <section class="screen" id="s-final" hidden>
+      <div class="card center-card tall final-card" id="finalCard">
+        <p class="eyebrow" data-i18n="gameOver">انتهت اللعبة!</p>
+        <p class="muted" data-i18n="finalRank">ترتيبك النهائي</p>
+        <div class="final-rank" id="finalRank" dir="ltr"></div>
+        <p class="final-of" id="finalOf"></p>
+        <p class="final-score" id="finalScore" dir="ltr"></p>
+        <p class="podium-msg" id="podiumMsg" data-i18n="onPodium" hidden>أنت على المنصة!</p>
+        <p class="muted" data-i18n="thanks">شكرًا للعب!</p>
+        <p class="muted small" data-i18n="stayForNext">ابقَ هنا، قد يبدأ المضيف لعبة جديدة</p>
+      </div>
+    </section>
+
+    <!-- Removed by host -->
+    <section class="screen" id="s-kicked" hidden>
+      <div class="card center-card tall">
+        <h1 data-i18n="removedTitle">تم إخراجك</h1>
+        <p class="muted" data-i18n="errKicked">أخرجك المضيف من هذه الغرفة</p>
+        <button class="pill-btn primary" id="btnJoinOther" type="button" data-i18n="joinOther">دخول غرفة أخرى</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
